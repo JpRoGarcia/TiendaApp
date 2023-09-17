@@ -1,15 +1,14 @@
 // productRoutes.js
 const express = require('express');
 const router = express.Router();
-const productController = require('../controllers/productController');
+const cartController = require('../controllers/cartController');
 
-// Get all products
-router.get('/', productController.getAllProducts);
+// Agregar un producto al carrito
+cartRouter.post('/add', cartController.addToCart);
 
-// Get a product by SKU
-router.get('/:sku', productController.getProductBySKU);
+// Eliminar un producto del carrito por SKU
+cartRouter.delete('/remove/:sku', cartController.removeFromCart);
 
-// Sell a product (update available quantity)
-router.post('/sell/:sku', productController.sellProduct);
-
+// Obtener el contenido del carrito y su precio total
+cartRouter.get('/contents', cartController.getCartContents);
 module.exports = router;

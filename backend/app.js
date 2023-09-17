@@ -14,7 +14,7 @@ app.use('/api/products', productRoutes);
 // Rutas para el carrito
 app.use('/api/cart', cartRoutes);
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {
   console.log(`Servidor en ejecución en el puerto ${PORT}`);
 });
