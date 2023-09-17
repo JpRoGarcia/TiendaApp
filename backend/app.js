@@ -1,15 +1,13 @@
 const express = require('express');
-const bodyParser = require('body-parser');
-const cors = require('cors');
-const productRoutes = require('./routes/productRoutes'); // Importa tus rutas de productos
-const cartRoutes = require('./routes/cartRoutes'); // Importa tus rutas de carrito
+const productRoutes = require('./src/routes/productRoutes'); // Importa tus rutas de productos
+const cartRoutes = require('./src/routes/cartRoutes'); // Importa tus rutas de carrito
 
 const app = express();
+app.use(express.json());
 
-// Middleware
-app.use(bodyParser.json());
-app.use(cors());
-
+app.get('/', function (req, res) {
+  res.send('(: API de Artistas Y Album :)');
+})
 // Rutas para productos
 app.use('/api/products', productRoutes);
 

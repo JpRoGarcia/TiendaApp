@@ -1,21 +1,20 @@
-const express = require('express');
+// productController.js
 const Product = require('../models/Product');
-const router = express.Router();
 
-// Base de datos simulada para productos (puedes usar una base de datos real aquí)
+// Simulated database for products (you can use a real database here)
 const productsDB = [
   new Product('EA001', 'Producto 1', 'Descripción del Producto 1', 10, 10.99),
   new Product('EA002', 'Producto 2', 'Descripción del Producto 2', 5, 19.99),
-  // Agrega más productos aquí
+  // Add more products here
 ];
 
-// Obtener todos los productos
-router.get('/', (req, res) => {
+// Get all products
+function getAllProducts(req, res) {
   res.status(200).json(productsDB);
-});
+}
 
-// Obtener un producto por SKU
-router.get('/:sku', (req, res) => {
+// Get a product by SKU
+function getProductBySKU(req, res) {
   const { sku } = req.params;
   const product = productsDB.find((p) => p.sku === sku);
   if (product) {
@@ -23,10 +22,10 @@ router.get('/:sku', (req, res) => {
   } else {
     res.status(404).json({ message: 'Producto no encontrado' });
   }
-});
+}
 
-// Vender un producto (actualiza la cantidad disponible)
-router.post('/sell/:sku', (req, res) => {
+// Sell a product (update available quantity)
+function sellProduct(req, res) {
   const { sku } = req.params;
   const { quantityToSell } = req.body;
 
@@ -41,6 +40,11 @@ router.post('/sell/:sku', (req, res) => {
   } else {
     res.status(400).json({ message: 'No hay suficientes unidades disponibles' });
   }
-});
+}
 
-module.exports = router;
+module.exports = {
+  getAllProducts,
+  getProductBySKU,
+  sellProduct,
+};
+
