@@ -1,14 +1,15 @@
+// productRoutes.js
 const express = require('express');
 const router = express.Router();
 const productController = require('../controllers/productController');
 
-// Obtener todos los productos
+// Get all products
 router.get('/', productController.getAllProducts);
 
-// Obtener un producto por SKU
-router.get('/:sku', productController.getProductBySku);
+// Get a product by SKU
+router.get('/:sku', productController.getProductBySKU);
 
-// Vender un producto (actualizar la cantidad disponible)
+// Sell a product (update available quantity)
 router.post('/sell/:sku', productController.sellProduct);
 
 module.exports = router;
