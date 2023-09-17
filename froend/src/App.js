@@ -1,8 +1,8 @@
 import React from 'react';
 import logo from './logo.svg';
 import './App.css';
-import Component from './components/MiComponente';
-import myApp from './components/app';
+import Component from './componente/MiComponente';
+import myApp from './componente/app';
 
 function App() {
   return (
