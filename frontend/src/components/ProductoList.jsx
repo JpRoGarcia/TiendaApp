@@ -1,4 +1,5 @@
 import { data } from '../data';
+import { useEffect, useState } from 'react';
 
 export const ProductList = ({
 	allProducts,
@@ -8,6 +9,8 @@ export const ProductList = ({
 	total,
 	setTotal,
 }) => {
+  const [backendData, setBackendData] = useState([]);
+
 	const onAddProduct = product => {
 		if (allProducts.find(item => item.id === product.id)) {
 			const products = allProducts.map(item =>
@@ -25,22 +28,44 @@ export const ProductList = ({
 		setAllProducts([...allProducts, product]);
 	};
 
-	return (
+	const fetchDataFromBackend = async () => {
+		try {
+		  const response = await fetch('http://localhost:8080/api/products', {
+			method: 'GET',
+		  });
+		  if (!response.ok) {
+			throw new Error('La solicitud no fue exitosa');
+		  }
+	
+		  const dataFromBackend = await response.json();
+		  setBackendData(dataFromBackend); // Almacena los datos del backend en el estado
+	
+		  console.log('Datos del backend:', dataFromBackend);
+		} catch (error) {
+		  console.error('Error al obtener datos del backend:', error);
+		}
+	  };
+	
+	  useEffect(() => {
+		fetchDataFromBackend();
+	  }, []);
+
+	  return (
 		<div className='container-items'>
-			{data.map(product => (
-				<div className='item' key={product.id}>
-					<figure>
-						<img src={product.img} alt={product.nameProduct} />
-					</figure>
-					<div className='info-product'>
-						<h2>{product.nameProduct}</h2>
-						<p className='price'>${product.price}</p>
-						<button onClick={() => onAddProduct(product)}>
-							Añadir al carrito
-						</button>
-					</div>
-				</div>
-			))}
+		  {backendData.map((product) => (
+			<div className='item' key={product.id}>
+			  <figure>
+				<img src={product.image} alt={product.name} />
+			  </figure>
+			  <div className='info-product'>
+				<h2>{product.name}</h2>
+				<p className='price'>${product.price}</p>
+				<p className='sku'>sku: {product.sku}</p>
+				<p className='description'>description: {product.description}</p>
+				<button onClick={() => onAddProduct(product)}>Añadir al carrito</button>
+			  </div>
+			</div>
+		  ))}
 		</div>
-	);
+	  );
 };

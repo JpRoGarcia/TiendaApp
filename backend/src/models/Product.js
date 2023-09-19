@@ -1,10 +1,11 @@
 class Product {
-  constructor(sku, name, description, quantity, price) {
+  constructor(sku, name, description, quantity, price, image) {
     this.sku = sku;
     this.name = name;
     this.description = description;
     this.quantity = quantity;
     this.price = price;
+    this.image = image
   }
 
   // Método para reducir la cantidad de unidades disponibles al vender
