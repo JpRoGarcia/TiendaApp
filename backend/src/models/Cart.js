@@ -5,12 +5,21 @@ class Cart {
   
     // Agregar un producto al carrito
     addItem(product, quantity, precio) {
-      const item = {
-        product,
-        quantity,
-        precio
-      };
-      this.items.push(item);
+      const existingItem = this.items.find((item) => item.product.sku === product.sku);
+
+      if (existingItem) {
+        // Si el producto ya existe en el carrito, simplemente aumenta la cantidad
+        existingItem.quantity += quantity;
+        existingItem.precio += precio;
+      } else {
+        // Si el producto no existe en el carrito, agrégalo como un nuevo elemento
+        const newItem = {
+          product,
+          quantity,
+          precio
+        };
+        this.items.push(newItem);
+      }
     }
   
     // Eliminar un producto del carrito por SKU
@@ -26,11 +35,13 @@ class Cart {
     // Calcular el precio total del carrito
     calculateTotalPrice() {
       let totalPrice = 0;
+      let quantity = 0;
       for (const item of this.items) {
         const productPrice = item.product.price;
         totalPrice += productPrice * item.quantity;
+        quantity += item.quantity;
       }
-      return totalPrice;
+      return [totalPrice, quantity];
     }
   }
   

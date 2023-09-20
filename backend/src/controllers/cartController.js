@@ -40,6 +40,7 @@ function removeFromCart(req, res) {
   const { sku } = req.params;
   cart.removeItemBySku(sku);
   res.status(200).json({ message: 'Producto eliminado del carrito' });
+  
 }
 
 // Obtener el contenido del carrito y su precio total

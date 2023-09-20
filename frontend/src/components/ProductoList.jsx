@@ -1,16 +1,16 @@
 import { data } from '../data';
 import { useEffect, useState } from 'react';
+import { Header } from './Header'; // Asegúrate de especificar la ruta correcta al archivo
 
 export const ProductList = ({
 	allProducts,
 	setAllProducts,
-	countProducts,
-	setCountProducts,
-	total,
-	setTotal,
 }) => {
   const [backendData, setBackendData] = useState([]);
-  const [counter, setCounter] = useState(1); // Contador independiente
+  const [backendDataCart, setBackendDataCart] = useState([]);
+  const [counter, setCounter] = useState(1); 
+  const [total, setTotal] = useState(0);
+  const [countProducts, setCountProducts] = useState(0);
 
 	const onAddProduct = product => {
 		if (allProducts.find(item => item.id === product.id)) {
@@ -28,7 +28,6 @@ export const ProductList = ({
 		setCountProducts(countProducts + product.quantity);
 		setAllProducts([...allProducts, product]);
 	};
-
 	const agregarProductoAlCarrito = async (product, counter) => {
 		const sku = product.sku;
 	  
@@ -57,7 +56,8 @@ export const ProductList = ({
 		  // Maneja la respuesta del backend aquí
 		  console.log(data.message);
 
-		  fetchDataFromBackend();
+		  fetchDataFromBackendProducts();
+		  fetchDataFromBackendCart();
 
 		} catch (error) {
 		  // Manejar errores de red o de la solicitud aquí
@@ -84,7 +84,9 @@ export const ProductList = ({
 			// Maneja la respuesta del backend aquí
 			console.log(data.message);
   
-			fetchDataFromBackend();
+			fetchDataFromBackendProducts();
+			fetchDataFromBackendCart();
+
   
 		  } catch (error) {
 			// Manejar errores de red o de la solicitud aquí
@@ -92,8 +94,32 @@ export const ProductList = ({
 		  }
 	  };
 	  
+	const fetchDataFromBackendCart = async () => {
+	try {
+		const response = await fetch('http://localhost:8080/api/cart/contents', {
+		method: 'GET',
+		});
+		if (!response.ok) {
+		throw new Error('La solicitud no fue exitosa');
+		}
 
-	const fetchDataFromBackend = async () => {
+		const backendDataCart = await response.json();
+		const totalFromBackend = parseFloat(backendDataCart.totalPrice[0]).toFixed(2);
+		const cantidadFromBackend = backendDataCart.totalPrice[1]
+		setBackendDataCart(backendDataCart.cartContents);
+		setTotal(totalFromBackend);
+		setCountProducts(cantidadFromBackend) // Almacena los datos del backend en el estado
+
+		console.log('Datos del backend:', backendDataCart);
+		
+		console.log('Tota :', totalFromBackend);
+		console.log('bCantidad :', cantidadFromBackend);
+	} catch (error) {
+		console.error('Error al obtener datos del backend:', error);
+	}
+	};
+
+	const fetchDataFromBackendProducts = async () => {
 		try {
 		  const response = await fetch('http://localhost:8080/api/products', {
 			method: 'GET',
@@ -125,7 +151,7 @@ export const ProductList = ({
 	  };
 
 	  useEffect(() => {
-		fetchDataFromBackend();
+		fetchDataFromBackendProducts();
 	  }, []);
 
 	  return (

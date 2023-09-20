@@ -3,22 +3,36 @@ import { useEffect, useState } from 'react';
 export const Header = ({
 	allProducts,
 	setAllProducts,
-	countProducts,
-	setCountProducts,
 }) => {
 	const [active, setActive] = useState(false);
 	const [backendData, setBackendData] = useState([]);
 	const [total, setTotal] = useState(0);
+	const [countProducts, setCountProducts] = useState(0);
 
-	const onDeleteProduct = product => {
-		const results = allProducts.filter(
-			item => item.id !== product.id
-		);
-
-		setTotal(total - product.price * product.quantity);
-		setCountProducts(countProducts - product.quantity);
-		setAllProducts(results);
-	};
+	const onDeleteProduct = async (product) => {
+		try {
+			const sku = product.sku;
+		  const response = await fetch(`http://localhost:8080/api/cart/remove/${sku}`, {
+			method: 'DELETE',
+		  });
+	  
+		  if (!response.ok) {
+			throw new Error('La solicitud de eliminación no fue exitosa');
+		  }
+	  
+		  // Si la eliminación en el backend fue exitosa, actualiza la interfaz de usuario
+		  setTotal((prevTotal) => (prevTotal - product.precio * product.quantity).toFixed(2));
+		  setCountProducts((prevCount) => prevCount - product.quantity);
+	  
+		  // Filtra los productos para mostrar solo los que no se han eliminado
+		  const updatedCartContents = backendData.filter((item) => item.product.sku !== product.product.sku);
+		  setBackendData(updatedCartContents);
+	  
+		  console.log('Producto eliminado del carrito:', product.product.name);
+		} catch (error) {
+		  console.error('Error al eliminar el producto del carrito:', error);
+		}
+	  };
 
 	const onCleanCart = () => {
 		setAllProducts([]);
@@ -26,7 +40,7 @@ export const Header = ({
 		setCountProducts(0);
 	};
 
-	const fetchDataFromBackend = async () => {
+	const fetchDataFromBackendCart = async () => {
 		try {
 		  const response = await fetch('http://localhost:8080/api/cart/contents', {
 			method: 'GET',
@@ -36,20 +50,23 @@ export const Header = ({
 		  }
 	
 		  const dataFromBackend = await response.json();
-		  const totalFromBackend = parseFloat(dataFromBackend.totalPrice).toFixed(2);
+		  const totalFromBackend = parseFloat(dataFromBackend.totalPrice[0]).toFixed(2);
+		  const cantidadFromBackend = dataFromBackend.totalPrice[1]
 		  setBackendData(dataFromBackend.cartContents);
-		  setTotal(totalFromBackend); // Almacena los datos del backend en el estado
+		  setTotal(totalFromBackend);
+		  setCountProducts(cantidadFromBackend) // Almacena los datos del backend en el estado
 	
 		  console.log('Datos del backend:', dataFromBackend);
 		  
-		  console.log('backendDatos del :', total);
+		  console.log('Tota :', totalFromBackend);
+		  console.log('bCantidad :', cantidadFromBackend);
 		} catch (error) {
 		  console.error('Error al obtener datos del backend:', error);
 		}
 	  };
 
 	  useEffect(() => {
-		fetchDataFromBackend();
+		fetchDataFromBackendCart();
 	  }, []);
 
 	return (
