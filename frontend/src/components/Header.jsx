@@ -1,14 +1,14 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 export const Header = ({
 	allProducts,
 	setAllProducts,
-	total,
 	countProducts,
 	setCountProducts,
-	setTotal,
 }) => {
 	const [active, setActive] = useState(false);
+	const [backendData, setBackendData] = useState([]);
+	const [total, setTotal] = useState(0);
 
 	const onDeleteProduct = product => {
 		const results = allProducts.filter(
@@ -25,6 +25,32 @@ export const Header = ({
 		setTotal(0);
 		setCountProducts(0);
 	};
+
+	const fetchDataFromBackend = async () => {
+		try {
+		  const response = await fetch('http://localhost:8080/api/cart/contents', {
+			method: 'GET',
+		  });
+		  if (!response.ok) {
+			throw new Error('La solicitud no fue exitosa');
+		  }
+	
+		  const dataFromBackend = await response.json();
+		  const totalFromBackend = parseFloat(dataFromBackend.totalPrice).toFixed(2);
+		  setBackendData(dataFromBackend.cartContents);
+		  setTotal(totalFromBackend); // Almacena los datos del backend en el estado
+	
+		  console.log('Datos del backend:', dataFromBackend);
+		  
+		  console.log('backendDatos del :', total);
+		} catch (error) {
+		  console.error('Error al obtener datos del backend:', error);
+		}
+	  };
+
+	  useEffect(() => {
+		fetchDataFromBackend();
+	  }, []);
 
 	return (
 		<header>
@@ -59,20 +85,20 @@ export const Header = ({
 						active ? '' : 'hidden-cart'
 					}`}
 				>
-					{allProducts.length ? (
+					{backendData.length ? (
 						<>
 							<div className='row-product'>
-								{allProducts.map(product => (
-									<div className='cart-product' key={product.id}>
+								{backendData.map(item => (
+									<div className='cart-product' key={item.product.sku}>
 										<div className='info-cart-product'>
 											<span className='cantidad-producto-carrito'>
-												{product.quantity}
+												{item.quantity}
 											</span>
 											<p className='titulo-producto-carrito'>
-												{product.nameProduct}
+												{item.product.name}
 											</p>
 											<span className='precio-producto-carrito'>
-												${product.price}
+												${item.precio}
 											</span>
 										</div>
 										<svg
@@ -82,14 +108,14 @@ export const Header = ({
 											strokeWidth='1.5'
 											stroke='currentColor'
 											className='icon-close'
-											onClick={() => onDeleteProduct(product)}
+											onClick={() => onDeleteProduct(item)}
 										>
 											<path
 												strokeLinecap='round'
 												strokeLinejoin='round'
 												d='M6 18L18 6M6 6l12 12'
 											/>
-										</svg>
+										</svg>	
 									</div>
 								))}
 							</div>
