@@ -10,6 +10,7 @@ export const ProductList = ({
 	setTotal,
 }) => {
   const [backendData, setBackendData] = useState([]);
+  const [counter, setCounter] = useState(1); // Contador independiente
 
 	const onAddProduct = product => {
 		if (allProducts.find(item => item.id === product.id)) {
@@ -28,16 +29,21 @@ export const ProductList = ({
 		setAllProducts([...allProducts, product]);
 	};
 
-	const agregarProductoAlCarrito = async (product) => {
+	const agregarProductoAlCarrito = async (product, counter) => {
 		const sku = product.sku;
 	  
+		const requestBody = {
+			product: product,
+			counter: counter, // Agregamos el valor de counter al cuerpo de la solicitud
+		};
+
 		try {
 		  const response = await fetch(`http://localhost:8080/api/products/sell/${sku}`, {
 			method: 'POST',
 			headers: {
 			  'Content-Type': 'application/json', // Asegúrate de establecer el tipo de contenido adecuado
 			},
-			body: JSON.stringify({ product }),
+			body: JSON.stringify(requestBody),
 		  });
 	  
 		  if (!response.ok) {
@@ -57,6 +63,33 @@ export const ProductList = ({
 		  // Manejar errores de red o de la solicitud aquí
 		  console.error('Error en la solicitud:', error);
 		}
+
+		try {
+			const response = await fetch(`http://localhost:8080/api/cart/add`, {
+			  method: 'POST',
+			  headers: {
+				'Content-Type': 'application/json', // Asegúrate de establecer el tipo de contenido adecuado
+			  },
+			  body: JSON.stringify(requestBody),
+			});
+		
+			if (!response.ok) {
+			  // Manejar errores de respuesta aquí si es necesario
+			  console.error('Error en la solicitud:', response.status);
+			  return;
+			}
+		
+			const data = await response.json(); // Convierte la respuesta a JSON
+		
+			// Maneja la respuesta del backend aquí
+			console.log(data.message);
+  
+			fetchDataFromBackend();
+  
+		  } catch (error) {
+			// Manejar errores de red o de la solicitud aquí
+			console.error('Error en la solicitud:', error);
+		  }
 	  };
 	  
 
@@ -78,6 +111,19 @@ export const ProductList = ({
 		}
 	  };
 	
+
+	  const handleIncreaseQuantity = () => {
+		// Incrementa el contador independiente en 1
+		setCounter(counter + 1);
+	  };
+	
+	  const handleDecreaseQuantity = () => {
+		// Verifica que el contador independiente no sea menor que 1 antes de disminuir
+		if (counter > 1) {
+		  setCounter(counter - 1);
+		}
+	  };
+
 	  useEffect(() => {
 		fetchDataFromBackend();
 	  }, []);
@@ -94,8 +140,13 @@ export const ProductList = ({
 				<p className='price'>${product.price}</p>
 				<p className='sku'>sku: {product.sku}</p>
 				<p className='description'>description: {product.description}</p>
-				<p className='description'>quantity: {product.quantity}</p>
-				<button onClick={() => agregarProductoAlCarrito(product)}>Añadir al carrito</button>
+				<p className='quantity'>quantity: {product.quantity}</p>
+				<div className='quantity-container'>
+					<button onClick={handleDecreaseQuantity}>-</button>
+					<span className='quantity'>{counter}</span>
+					<button onClick={handleIncreaseQuantity}>+</button>
+           		</div>
+				<button onClick={() => agregarProductoAlCarrito(product, counter)}>Añadir al carrito</button>
 			  </div>
 			</div>
 		  ))}

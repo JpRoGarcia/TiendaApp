@@ -27,15 +27,16 @@ function getProductBySKU(req, res) {
 // Sell a product (update available quantity)
 function addToCart(req, res) {
   const { sku } = req.params;
-
+  const { counter } = req.body;
+ 
   const product = productsDB.find((p) => p.sku === sku);
 
   if (!product) {
     return res.status(404).json({ message: 'Producto no encontrado' });
   }
 
-  if (product.sell()) {
-    res.status(200).json({ message: 'Producto agregado al carrito exitosamente' });
+  if (product.sell(counter)) {
+    res.status(200).json({ message: 'Producto(s) agregado(s) al carrito exitosamente' });
   } else {
     res.status(400).json({ message: 'No se pudo agregar el producto al carrito' });
   }

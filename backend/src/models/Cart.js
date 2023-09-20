@@ -4,10 +4,11 @@ class Cart {
     }
   
     // Agregar un producto al carrito
-    addItem(product, quantity) {
+    addItem(product, quantity, precio) {
       const item = {
         product,
         quantity,
+        precio
       };
       this.items.push(item);
     }

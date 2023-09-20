@@ -2,21 +2,31 @@
 const Cart = require('../models/Cart');
 const cart = new Cart();
 
+const NormalPricingRule = require('../Rules/NormalPricingRule');
+const SpecialDiscountPricingRule = require('../Rules/SpecialDiscountPricingRule');
+const WeightPricingRule = require('../Rules/WeightPricingRule');
+
 // Agregar un producto al carrito
 function addToCart(req, res) {
-  const { product, quantity } = req.body;
+  const { product, counter } = req.body;
   const productType = product.sku.substring(0, 2);
   let totalPrice = 0;
 
   switch (productType) {
     case 'EA':
-      totalPrice = cart.addNormalProduct(product, quantity);
+      const pricingRuleEA = new NormalPricingRule();
+      precio = pricingRuleEA.calculatePrice(product, counter)
+      totalPrice = cart.addItem(product, counter, precio);
       break;
     case 'WE':
-      totalPrice = cart.addWeightProduct(product, quantity);
+      const pricingRuleWE = new WeightPricingRule();
+      precio = pricingRuleWE.calculatePrice(product, counter)
+      totalPrice = cart.addItem(product, counter, precio);
       break;
     case 'SP':
-      totalPrice = cart.addSpecialDiscountProduct(product, quantity);
+      const pricingRuleSP = new SpecialDiscountPricingRule();
+      precio = pricingRuleSP.calculatePrice(product, counter)
+      totalPrice = cart.addItem(product, counter, precio);
       break;
     default:
       return res.status(400).json({ message: 'SKU de producto no válido' });
