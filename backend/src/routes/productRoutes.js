@@ -4,6 +4,6 @@ const productController = require('../controllers/productController');
 
 router.get('/', productController.getAllProducts);
 router.get('/:sku', productController.getProductBySKU); // Change this line to getProductBySKU
-router.post('/sell/:sku', productController.sellProduct);
+router.post('/sell/:sku', productController.addToCart);
 
 module.exports = router;

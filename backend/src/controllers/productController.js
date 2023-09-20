@@ -25,9 +25,8 @@ function getProductBySKU(req, res) {
 }
 
 // Sell a product (update available quantity)
-function sellProduct(req, res) {
+function addToCart(req, res) {
   const { sku } = req.params;
-  const { quantityToSell } = req.body;
 
   const product = productsDB.find((p) => p.sku === sku);
 
@@ -35,16 +34,16 @@ function sellProduct(req, res) {
     return res.status(404).json({ message: 'Producto no encontrado' });
   }
 
-  if (product.sell(quantityToSell)) {
-    res.status(200).json({ message: 'Venta exitosa' });
+  if (product.sell()) {
+    res.status(200).json({ message: 'Producto agregado al carrito exitosamente' });
   } else {
-    res.status(400).json({ message: 'No hay suficientes unidades disponibles' });
+    res.status(400).json({ message: 'No se pudo agregar el producto al carrito' });
   }
 }
 
 module.exports = {
   getAllProducts,
   getProductBySKU,
-  sellProduct,
+  addToCart,
 };
 

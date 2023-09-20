@@ -28,6 +28,38 @@ export const ProductList = ({
 		setAllProducts([...allProducts, product]);
 	};
 
+	const agregarProductoAlCarrito = async (product) => {
+		const sku = product.sku;
+	  
+		try {
+		  const response = await fetch(`http://localhost:8080/api/products/sell/${sku}`, {
+			method: 'POST',
+			headers: {
+			  'Content-Type': 'application/json', // Asegúrate de establecer el tipo de contenido adecuado
+			},
+			body: JSON.stringify({ product }),
+		  });
+	  
+		  if (!response.ok) {
+			// Manejar errores de respuesta aquí si es necesario
+			console.error('Error en la solicitud:', response.status);
+			return;
+		  }
+	  
+		  const data = await response.json(); // Convierte la respuesta a JSON
+	  
+		  // Maneja la respuesta del backend aquí
+		  console.log(data.message);
+
+		  fetchDataFromBackend();
+
+		} catch (error) {
+		  // Manejar errores de red o de la solicitud aquí
+		  console.error('Error en la solicitud:', error);
+		}
+	  };
+	  
+
 	const fetchDataFromBackend = async () => {
 		try {
 		  const response = await fetch('http://localhost:8080/api/products', {
@@ -62,7 +94,8 @@ export const ProductList = ({
 				<p className='price'>${product.price}</p>
 				<p className='sku'>sku: {product.sku}</p>
 				<p className='description'>description: {product.description}</p>
-				<button onClick={() => onAddProduct(product)}>Añadir al carrito</button>
+				<p className='description'>quantity: {product.quantity}</p>
+				<button onClick={() => agregarProductoAlCarrito(product)}>Añadir al carrito</button>
 			  </div>
 			</div>
 		  ))}

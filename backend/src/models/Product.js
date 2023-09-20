@@ -9,9 +9,9 @@ class Product {
   }
 
   // Método para reducir la cantidad de unidades disponibles al vender
-  sell(quantityToSell) {
-    if (quantityToSell <= this.quantity) {
-      this.quantity -= quantityToSell;
+  sell() {
+    if (this.quantity > 0) {
+      this.quantity --;
       return true; // Éxito en la venta
     }
     return false; // No hay suficientes unidades disponibles
