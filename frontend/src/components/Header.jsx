@@ -1,13 +1,15 @@
 import { useEffect, useState } from 'react';
 
 export const Header = ({
-	allProducts,
-	setAllProducts,
+	cart,
+	setcart,
+	total,
+	setTotal,
+	countProducts,
+	setCountProducts,
 }) => {
 	const [active, setActive] = useState(false);
-	const [backendData, setBackendData] = useState([]);
-	const [total, setTotal] = useState(0);
-	const [countProducts, setCountProducts] = useState(0);
+
 
 	const onDeleteProduct = async (product) => {
 		try {
@@ -25,8 +27,8 @@ export const Header = ({
 		  setCountProducts((prevCount) => prevCount - product.quantity);
 	  
 		  // Filtra los productos para mostrar solo los que no se han eliminado
-		  const updatedCartContents = backendData.filter((item) => item.product.sku !== product.product.sku);
-		  setBackendData(updatedCartContents);
+		  const updatedCartContents = cart.filter((item) => item.product.sku !== product.product.sku);
+		  setcart(updatedCartContents);
 	  
 		  console.log('Producto eliminado del carrito:', product.product.name);
 		} catch (error) {
@@ -35,7 +37,7 @@ export const Header = ({
 	  };
 
 	const onCleanCart = () => {
-		setAllProducts([]);
+
 		setTotal(0);
 		setCountProducts(0);
 	};
@@ -52,14 +54,9 @@ export const Header = ({
 		  const dataFromBackend = await response.json();
 		  const totalFromBackend = parseFloat(dataFromBackend.totalPrice[0]).toFixed(2);
 		  const cantidadFromBackend = dataFromBackend.totalPrice[1]
-		  setBackendData(dataFromBackend.cartContents);
+		  setcart(dataFromBackend.cartContents);
 		  setTotal(totalFromBackend);
 		  setCountProducts(cantidadFromBackend) // Almacena los datos del backend en el estado
-	
-		  console.log('Datos del backend:', dataFromBackend);
-		  
-		  console.log('Tota :', totalFromBackend);
-		  console.log('bCantidad :', cantidadFromBackend);
 		} catch (error) {
 		  console.error('Error al obtener datos del backend:', error);
 		}
@@ -102,10 +99,10 @@ export const Header = ({
 						active ? '' : 'hidden-cart'
 					}`}
 				>
-					{backendData.length ? (
+					{cart.length ? (
 						<>
 							<div className='row-product'>
-								{backendData.map(item => (
+								{cart.map(item => (
 									<div className='cart-product' key={item.product.sku}>
 										<div className='info-cart-product'>
 											<span className='cantidad-producto-carrito'>
