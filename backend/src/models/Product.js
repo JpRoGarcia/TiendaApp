@@ -8,13 +8,13 @@ class Product {
     this.image = image
   }
 
-  // Método para reducir la cantidad de unidades disponibles al vender
+
   sell(cantidad) {
     if (this.quantity >= cantidad) {
       this.quantity -= cantidad;
-      return true; // Éxito en la venta
+      return true; 
     }
-    return false; // No hay suficientes unidades disponibles
+    return false; 
   }
 }
 

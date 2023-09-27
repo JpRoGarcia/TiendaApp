@@ -3,7 +3,7 @@ const router = express.Router();
 const productController = require('../controllers/productController');
 
 router.get('/', productController.getAllProducts);
-router.get('/:sku', productController.getProductBySKU); // Change this line to getProductBySKU
+router.get('/:sku', productController.getProductBySKU);
 router.post('/sell/:sku', productController.addToCart);
 
 module.exports = router;

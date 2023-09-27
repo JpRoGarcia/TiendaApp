@@ -11,26 +11,21 @@ export const Header = ({
 	const [active, setActive] = useState(false);
 
 
-	const onDeleteProduct = async (product) => {
+	const onDeleteProduct = async (item) => {
 		try {
-			const sku = product.sku;
-		  const response = await fetch(`http://localhost:8080/api/cart/remove/${sku}`, {
+			const sku = item.product.sku;
+			console.log(sku);
+		  	const response = await fetch(`http://localhost:8080/api/cart/remove/${sku}`, {
 			method: 'DELETE',
 		  });
 	  
 		  if (!response.ok) {
 			throw new Error('La solicitud de eliminación no fue exitosa');
 		  }
+
+		  fetchDataFromBackendCart()
 	  
-		  // Si la eliminación en el backend fue exitosa, actualiza la interfaz de usuario
-		  setTotal((prevTotal) => (prevTotal - product.precio * product.quantity).toFixed(2));
-		  setCountProducts((prevCount) => prevCount - product.quantity);
-	  
-		  // Filtra los productos para mostrar solo los que no se han eliminado
-		  const updatedCartContents = cart.filter((item) => item.product.sku !== product.product.sku);
-		  setcart(updatedCartContents);
-	  
-		  console.log('Producto eliminado del carrito:', product.product.name);
+		  console.log('Producto eliminado del carrito:', item.product.name);
 		} catch (error) {
 		  console.error('Error al eliminar el producto del carrito:', error);
 		}
